@@ -1,1 +1,126 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Well-come</title>
 
+<style>
+body {
+    margin: 0;
+    background: #111;
+    text-align: center;
+    color: yellow;
+    font-family: Arial;
+}
+
+canvas {
+    background: #11CEEB;
+    display: background;
+    margin: auto;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🏃 Ceater<b><i> Mr.Ayush</b></i></h2>
+<p><u>Target is only 1000 you can do ti</u></p>
+<p id="score">Score: 1000</p>
+
+<canvas id="game" width="350" height="500"></canvas>
+
+<script>
+let canvas = document.getElementById("game");
+let ctx = canvas.getContext("2d");
+
+let player = {
+    x: 50,
+    y: 400,
+    width: 20,
+    height: 40,
+    velocityY: 0,
+    jumpPower: -18,
+    gravity: 0.9,
+    onGround: true
+}
+let obstacle = {
+    x: 350,
+    y: 420,
+    width: 25,
+    height: 25,
+    speed: 7
+};
+
+let score = 0;
+let gameOver = false;
+
+document.addEventListener("touchstart", jump);
+document.addEventListener("click", jump);
+
+function jump() {
+    if (player.onGround && !gameOver) {
+        player.velocityY = player.jumpPower;
+        player.onGround = false;
+    }
+}
+
+function update() {
+    if (gameOver) return;
+
+    // Player physics
+    player.velocityY += player.gravity;
+    player.y += player.velocityY;
+
+    if (player.y >= 400) {
+        player.y = 400;
+        player.velocityY = 0;
+        player.onGround = true;
+    }
+
+    // Obstacle movement
+    obstacle.x -= obstacle.speed;
+    if (obstacle.x < -30) {
+        obstacle.x = 350;
+        score++;
+        document.getElementById("score").innerHTML = "Score: " + score;
+    }
+
+    // Collision
+    if (
+        player.x < obstacle.x + obstacle.width &&
+        player.x + player.width > obstacle.x &&
+        player.y < obstacle.y + obstacle.height &&
+        player.y + player.height > obstacle.y
+    ) {
+        gameOver = true;
+        alert("Game Over! Score: " + score);
+        location.reload();
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Ground
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 440, 350, 60);
+
+    // Player
+    ctx.fillStyle = "red";
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // Obstacle
+    ctx.fillStyle = "black";
+    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+  </html>
